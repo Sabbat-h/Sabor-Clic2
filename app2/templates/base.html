@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Sabor & Clic{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topo">
+    <a class="marca" href="{{ url_for('main.inicio') if session.get('usuario_id') else url_for('auth.login') }}">Sabor & Clic</a>
+    {% if session.get('usuario_id') %}
+      <nav aria-label="Navegação principal">
+        <a href="{{ url_for('main.inicio') }}">Início</a>
+        <a href="{{ url_for('prato.listar') }}">Cardápio</a>
+        {% if session.get('tipo_acesso') == 'CLIENTE' or session.get('tipo_acesso') == 'ADMIN' %}
+          <a href="{{ url_for('pedido.nova') }}">Fazer Pedido</a>
+          <a href="{{ url_for('pedido.listar') }}">Meus Pedidos</a>
+        {% endif %}
+        {% if session.get('tipo_acesso') in ['COZINHEIRO', 'ADMIN'] %}
+          <a href="{{ url_for('pedido.fila_kds') }}">Fila KDS</a>
+        {% endif %}
+        <form method="post" action="{{ url_for('auth.logout') }}"><button class="link-button">Sair</button></form>
+      </nav>
+    {% endif %}
+  </header>
+  <main class="container">
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% for categoria, mensagem in mensagens %}
+        <div class="alerta {{ categoria }}" role="alert">{{ mensagem }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block conteudo %}{% endblock %}
+  </main>
+  <footer>Sabor & Clic · Sistema de Gestão para Dark Kitchens</footer>
+</body>
+</html>

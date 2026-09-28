@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block titulo %}Painel · Sabor & Clic{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina"><div><h1>Olá, {{ session.usuario_nome }}</h1><p>Visão geral da operação da Dark Kitchen.</p></div></div>
+<section class="cards">
+  <article class="card"><span>Pratos no Cardápio</span><strong>{{ total_pratos }}</strong><a href="{{ url_for('prato.listar') }}">Ver cardápio →</a></article>
+  <article class="card"><span>Pedidos Concluídos</span><strong>{{ total_pedidos }}</strong><a href="{{ url_for('pedido.listar') }}">Ver histórico →</a></article>
+  {% if session.get('tipo_acesso') in ['COZINHEIRO', 'ADMIN'] %}
+    <article class="card destaque"><span>Cozinha</span><strong>Fila KDS</strong><a href="{{ url_for('pedido.fila_kds') }}">Ver produção →</a></article>
+  {% else %}
+    <article class="card destaque"><span>Atendimento</span><strong>Novo Pedido</strong><a href="{{ url_for('pedido.nova') }}">Abrir carrinho →</a></article>
+  {% endif %}
+</section>
+{% endblock %}
