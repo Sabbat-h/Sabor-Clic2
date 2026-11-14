@@ -1,119 +1,90 @@
-# Mercado Fácil — supermercado on-line com Flask
+**Sabor & Clic**
 
-Projeto didático completo para aulas de desenvolvimento web. Demonstra uma aplicação Flask organizada no padrão MVC, com autenticação por sessão, middleware `before_request`, SQLite, templates Jinja2 e exportação para Excel.
+Sistema web de cardápio e gerenciamento de pedidos de sobremesas, desenvolvido com Python e Flask. O projeto reúne uma interface em tons de vermelho, rosa e branco com funcionalidades de compra, controle de estoque e acompanhamento de pedidos.
 
-## Funcionalidades
+O sistema foi organizado seguindo o padrão MVC (Model–View–Controller) e utiliza SQLite para armazenar os dados.
 
-- login, logout e cadastro de usuários com senha criptografada;
-- middleware que protege todas as páginas privadas;
-- CRUD completo de produtos, pesquisa e controle de estoque;
-- carrinho de compras armazenado na sessão;
-- finalização transacional, com baixa automática do estoque;
-- data e hora automáticas registradas pelo SQLite;
-- histórico, detalhes e impressão de comprovante;
-- exportação de produtos e compras para `.xlsx`;
-- layout responsivo para computador, tablet e celular;
-- testes automatizados do fluxo principal.
+**Funcionalidades**
+- Página inicial e cardápio digital de sobremesas, com pesquisa e filtros por categoria.
+- Cadastro de clientes e login por usuário ou e-mail.
+- Carrinho de compras que abre na lateral do cardápio ao clicar no ícone, com adição, remoção e alteração de quantidades.
+- Finalização de pedidos com registro no banco de dados e atualização do estoque.
+- Comprovante e detalhes do pedido realizado.
+- Histórico de pedidos e fila da cozinha para a equipe autorizada.
+- Atualização dos pedidos para os estados Aguardando, Em Preparo, Pronto, Entregue e Não entregue.
+- Cadastro, edição e exclusão de pratos pelo administrador.
+- Exportação de informações de pratos e pedidos para planilhas Excel (.xlsx).
+Observação: o projeto registra pedidos, mas não possui integração com um serviço de pagamento on-line.
 
-## Organização MVC
+**Perfis de acesso:**
+Funcionalidade	                            Cliente    	Cozinheiro	  Administrador
 
-```text
-supermercado_online/
-├── app.py                 # fábrica da aplicação e middleware
-├── config.py              # configurações
-├── database.py            # conexão e esquema SQLite
-├── utils.py               # moeda e filtros Jinja2
-├── controllers/           # Controllers (rotas/Blueprints)
-├── models/                # Models (consultas e regras de dados)
-├── templates/             # Views Jinja2
-├── static/style.css       # interface responsiva
-├── instance/              # banco local criado automaticamente
-├── exports/               # reservado para exportações locais
-└── tests/                 # testes de integração
-```
+Consultar o cardápio	                         ✅	         ✅	             ✅
+Criar conta pelo site	                         ✅	          —	              —
+Fazer pedido pelo carrinho	                   ✅          	—	             ✅
+Visualizar o histórico geral de pedidos	        —	         ✅	             ✅
+Acessar a fila da cozinha	                      —	         ✅              ✅
+Atualizar o status e confirmar a entrega	      —	         ✅	             ✅
+Cadastrar, editar e excluir pratos	            —	          —	             ✅
 
-No Flask, os templates representam a camada View. Os Blueprints em `controllers/` recebem as requisições e coordenam os Models. Os arquivos em `models/` concentram acesso ao banco e regras de persistência.
 
-## Instalação no Linux com venv
+O cadastro público cria apenas contas do tipo CLIENTE. As contas de COZINHEIRO e ADMIN são criadas localmente por meio do script criar_equipe.py, e as permissões são verificadas também nas rotas do servidor.
 
-Requer Python 3.10 ou mais recente. No Ubuntu/Debian, instale o suporte a ambientes virtuais caso ainda não esteja disponível:
+O cliente não tem acesso ao histórico geral, mas pode consultar o comprovante de um pedido próprio.
 
-```bash
-sudo apt update
-sudo apt install python3 python3-venv python3-pip
-```
+Tecnologias utilizadas
+- Python e Flask — aplicação web, rotas e autenticação por sessão.
+- HTML5, CSS3 e JavaScript — páginas, estilização e interação do carrinho.
+- Jinja2 — renderização dos templates.
+- SQLite — persistência de usuários, pratos e pedidos.
+- Werkzeug — geração e verificação de hashes de senhas.
+- OpenPyXL — exportação de planilhas .xlsx.
 
-Entre na pasta do projeto e crie o ambiente:
+**Estrutura do projeto**
+Sabor-Clic2/
+├── app2/
+│   ├── app.py                 # Inicialização da aplicação Flask
+│   ├── config.py              # Configurações
+│   ├── database.py            # Conexão e estrutura do SQLite
+│   ├── criar_equipe.py        # Cadastro local de equipe autorizada
+│   ├── controllers/           # Rotas e regras de acesso
+│   ├── models/                # Consultas e operações de dados
+│   ├── templates/             # Páginas HTML com Jinja2
+│   ├── static/                # CSS, JavaScript e imagens
+│   ├── tests/                 # Arquivos de teste
+│   └── requirements.txt       # Dependências do Python
+├── DER_MER/
+├── img/
+└── README.md
+Como executar no Windows
+Tenha o Python instalado (recomenda-se a versão 3.11 ou 3.12) e abra o PowerShell na pasta do repositório.
 
-```bash
-cd supermercado_online
-python3 -m venv venv
-source venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
+1. Entre na aplicação:
+cd app2
 
-Execute a aplicação:
+3. Crie e ative um ambiente virtual:
+py -m venv venv
+.\venv\Scripts\Activate.ps1
+Se o PowerShell bloquear a ativação, use a permissão temporária para esta sessão e tente novamente:
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\venv\Scripts\Activate.ps1
 
-```bash
+5. Instale as dependências:
+python -m pip install -r requirements.txt
+
+7. Inicie a aplicação:
 python app.py
-```
 
-Abra `http://127.0.0.1:5000` no navegador.
+9. Abra no navegador:
+http://127.0.0.1:5000
 
-O banco `instance/supermercado.db` e todas as tabelas são criados automaticamente no primeiro início. O acesso inicial é:
+As tabelas do SQLite são criadas na inicialização se ainda não existirem. Para parar o servidor, pressione Ctrl + C no PowerShell.
+Como cadastrar a equipe
+O formulário público é exclusivo para clientes. Para criar uma conta de cozinheiro ou administrador no banco de dados local, execute, na pasta app2:
+python criar_equipe.py
+Selecione COZINHEIRO ou ADMIN e informe os dados solicitados pelo programa. Não publique credenciais reais nem o banco SQLite no GitHub.
+Segurança e publicação
+Este projeto foi desenvolvido para execução local e fins de aprendizado. Antes de disponibilizá-lo na internet, é necessário rever as configurações de segurança: usar uma SECRET_KEY secreta e configurável, desativar o modo de depuração (debug=True), revisar proteção de formulários e configurar um servidor adequado para produção.
 
-- usuário: `admin`
-- senha: `admin123`
-
-Cadastre uma conta própria e troque a chave da sessão antes de publicar a aplicação. Para sair do ambiente virtual, execute `deactivate`.
-
-## Executar os testes
-
-Com o ambiente virtual ativo:
-
-```bash
-pytest -q
-```
-
-Os testes usam bancos temporários e não alteram o banco utilizado em aula.
-
-## Configuração segura
-
-Para uma aula local, a configuração padrão funciona sem ajustes. Em uma implantação real, defina uma chave longa e aleatória:
-
-```bash
-export SECRET_KEY="uma-chave-longa-aleatoria-e-secreta"
-python app.py
-```
-
-O servidor iniciado por `python app.py` é voltado ao desenvolvimento e não deve ser exposto diretamente na internet.
-
-## Publicar o código no GitHub
-
-Crie primeiro um repositório vazio no GitHub. Depois, dentro da pasta do projeto:
-
-```bash
-git init
-git add .
-git commit -m "Projeto inicial do supermercado online"
-git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/supermercado_online.git
-git push -u origin main
-```
-
-O `.gitignore` impede o envio do ambiente virtual, banco local, caches, segredos e planilhas exportadas.
-
-## Roteiro sugerido para a aula
-
-1. Apresente `create_app()` e o registro dos Blueprints em `app.py`.
-2. Mostre como `before_request` verifica a sessão antes de cada rota privada.
-3. Compare responsabilidades entre Controller, Model e View.
-4. Cadastre um produto e acompanhe a escrita no SQLite.
-5. Adicione itens ao carrinho e observe os dados da sessão.
-6. Finalize a compra e explique a transação e a baixa de estoque.
-7. Exporte as planilhas e execute `pytest -q` para demonstrar verificação automática.
-
-## Observações
-
-Valores monetários são armazenados em centavos (inteiros), evitando erros de arredondamento de `float`. Exclusão, logout e finalização usam POST, para impedir alterações acidentais por simples abertura de links. As exportações são geradas em memória, evitando conflito entre usuários simultâneos.
+Ao publicar o código no GitHub, não inclua o ambiente virtual (venv/), bancos de dados (*.sqlite, *.db), arquivos .env, senhas ou arquivos temporários (__pycache__/). Os testes existentes também devem ser revisados para refletir as rotas atuais do Sabor & Clic.
+Sabor & Clic — Traga sabor à sua vida, apenas com um clic!
