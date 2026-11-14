@@ -17,8 +17,9 @@ def _carrinho():
 
 @pedido_bp.get("")
 def listar():
-    usuario_id = session["usuario_id"] if session.get("tipo_acesso") == "CLIENTE" else None
-    return render_template("pedidos.html", pedidos=pedido_model.listar(usuario_id))
+    if session.get("tipo_acesso") not in ("ADMIN", "COZINHEIRO"):
+        abort(403)
+    return render_template("pedidos.html", pedidos=pedido_model.listar())
 
 
 @pedido_bp.get("/kds")
@@ -35,10 +36,10 @@ def atualizar_status(pedido_id):
         flash("Ação não permitida.", "erro")
         return redirect(url_for("main.inicio"))
     novo_status = request.form.get("status", "")
-    if novo_status in ["Aguardando", "Em Preparo", "Pronto", "Entregue"]:
+    if novo_status in ["Aguardando", "Em Preparo", "Pronto", "Entregue", "Não entregue"]:
         pedido_model.atualizar_status(pedido_id, novo_status)
         flash("Status do pedido atualizado.", "sucesso")
-    return redirect(url_for("pedido.fila_kds"))
+    return redirect(url_for("pedido.listar"))
 
 
 @pedido_bp.get("/nova")
@@ -66,7 +67,7 @@ def adicionar():
         nova_quantidade = quantidade + (existente["quantidade"] if existente else 0)
         if nova_quantidade > prato["estoque"]:
             flash("A quantidade total no carrinho supera o estoque.", "erro")
-            return redirect(url_for("pedido.nova"))
+            return redirect(url_for("prato.listar", carrinho="aberto"))
         if existente:
             existente["quantidade"] = nova_quantidade
         else:
@@ -74,7 +75,31 @@ def adicionar():
                              "preco_centavos": prato["preco_centavos"], "quantidade": quantidade})
         session["carrinho"] = carrinho
         flash("Prato adicionado ao carrinho.", "sucesso")
-    return redirect(url_for("pedido.nova"))
+    return redirect(url_for("prato.listar", carrinho="aberto"))
+
+
+@pedido_bp.post("/carrinho/<int:indice>/quantidade")
+def alterar_quantidade(indice):
+    carrinho = _carrinho()
+    if indice < 0 or indice >= len(carrinho):
+        abort(404)
+    try:
+        delta = int(request.form.get("delta", "0"))
+    except ValueError:
+        delta = 0
+    if delta not in (-1, 1):
+        abort(400)
+    item = carrinho[indice]
+    nova_quantidade = item["quantidade"] + delta
+    prato = prato_model.buscar(item["prato_id"])
+    if nova_quantidade <= 0:
+        carrinho.pop(indice)
+    elif prato is None or nova_quantidade > prato["estoque"]:
+        flash("Quantidade indisponível em estoque.", "erro")
+    else:
+        item["quantidade"] = nova_quantidade
+    session["carrinho"] = carrinho
+    return redirect(url_for("prato.listar", carrinho="aberto"))
 
 
 @pedido_bp.post("/carrinho/<int:indice>/remover")
@@ -84,14 +109,14 @@ def remover(indice):
         abort(404)
     carrinho.pop(indice)
     session["carrinho"] = carrinho
-    return redirect(url_for("pedido.nova"))
+    return redirect(url_for("prato.listar", carrinho="aberto"))
 
 
 @pedido_bp.post("/carrinho/limpar")
 def limpar():
     session.pop("carrinho", None)
     flash("Carrinho esvaziado.", "sucesso")
-    return redirect(url_for("pedido.nova"))
+    return redirect(url_for("prato.listar", carrinho="aberto"))
 
 
 @pedido_bp.post("/finalizar")
@@ -99,12 +124,15 @@ def finalizar():
     carrinho = _carrinho()
     if not carrinho:
         flash("O carrinho está vazio.", "erro")
-        return redirect(url_for("pedido.nova"))
+        return redirect(url_for("prato.listar", carrinho="aberto"))
+    if not session.get("usuario_id"):
+        flash("Faça login para finalizar a compra.", "erro")
+        return redirect(url_for("auth.login"))
     try:
         pedido_id = pedido_model.finalizar(session["usuario_id"], carrinho)
     except ValueError as erro:
         flash(str(erro), "erro")
-        return redirect(url_for("pedido.nova"))
+        return redirect(url_for("prato.listar", carrinho="aberto"))
     session.pop("carrinho", None)
     flash("Pedido realizado com sucesso.", "sucesso")
     return redirect(url_for("pedido.detalhes", pedido_id=pedido_id))
@@ -115,12 +143,16 @@ def detalhes(pedido_id):
     pedido = pedido_model.buscar(pedido_id)
     if pedido is None:
         abort(404)
+    if session.get("tipo_acesso") not in ("ADMIN", "COZINHEIRO") and pedido["usuario_id"] != session.get("usuario_id"):
+        abort(403)
     return render_template("detalhes_pedido.html", pedido=pedido,
                            itens=pedido_model.listar_itens(pedido_id))
 
 
 @pedido_bp.get("/exportar")
 def exportar():
+    if session.get("tipo_acesso") not in ("ADMIN", "COZINHEIRO"):
+        abort(403)
     wb = Workbook()
     ws = wb.active
     ws.title = "Pedidos"

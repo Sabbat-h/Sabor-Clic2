@@ -1,14 +1,1 @@
-{% extends "base.html" %}
-{% block titulo %}Entrar · Sabor & Clic{% endblock %}
-{% block conteudo %}
-<section class="auth-card">
-  <h1>Bem-vindo ao Sabor & Clic</h1><p>Entre para gerenciar o cardápio, pedidos e produção.</p>
-  <form method="post" class="formulario">
-    <label>Usuário<input name="usuario" required autofocus autocomplete="username"></label>
-    <label>Senha<input type="password" name="senha" required autocomplete="current-password"></label>
-    <button class="botao primario" type="submit">Entrar</button>
-  </form>
-  <p class="ajuda">Acesso inicial: <strong>admin</strong> / <strong>admin123</strong></p>
-  <p><a href="{{ url_for('auth.cadastro') }}">Criar uma conta</a></p>
-</section>
-{% endblock %}
+{% extends "base.html" %}{% block titulo %}Login · Sabor & Clic{% endblock %}{% block classe_pagina %}pagina-login{% endblock %}{% block conteudo %}<section class="login-layout"><div class="login-foto"><img src="{{ url_for('static',filename='images/cupcakes-referencia.png') }}" alt="Cupcakes decorados"></div><div class="login-lado"><div class="login-marca"><span>♧</span><h1>SABOR &amp; CLIC</h1></div><form method="post" class="login-box"><h2>Acesse sua conta</h2><label class="sr-only" for="usuario">Usuário</label><div class="campo-icone">✉ <input id="usuario" name="usuario" placeholder="Digite seu usuário ou e-mail" required autocomplete="username"></div><label class="sr-only" for="senha">Senha</label><div class="campo-icone">♙ <input id="senha" name="senha" type="password" placeholder="Digite sua senha" required autocomplete="current-password"><button type="button" class="mostrar-senha" onclick="const x=document.getElementById('senha');x.type=x.type==='password'?'text':'password'" aria-label="Mostrar senha">◉</button></div><button class="botao rosa" type="submit">Login →</button></form><p class="login-cadastro">Ainda não tem uma conta? <a href="{{ url_for('auth.cadastro') }}">Cadastre-se</a></p></div></section>{% endblock %}

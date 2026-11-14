@@ -1,14 +1,1 @@
-{% extends "base.html" %}
-{% block titulo %}Painel · Sabor & Clic{% endblock %}
-{% block conteudo %}
-<div class="cabecalho-pagina"><div><h1>Olá, {{ session.usuario_nome }}</h1><p>Visão geral da operação da Dark Kitchen.</p></div></div>
-<section class="cards">
-  <article class="card"><span>Pratos no Cardápio</span><strong>{{ total_pratos }}</strong><a href="{{ url_for('prato.listar') }}">Ver cardápio →</a></article>
-  <article class="card"><span>Pedidos Concluídos</span><strong>{{ total_pedidos }}</strong><a href="{{ url_for('pedido.listar') }}">Ver histórico →</a></article>
-  {% if session.get('tipo_acesso') in ['COZINHEIRO', 'ADMIN'] %}
-    <article class="card destaque"><span>Cozinha</span><strong>Fila KDS</strong><a href="{{ url_for('pedido.fila_kds') }}">Ver produção →</a></article>
-  {% else %}
-    <article class="card destaque"><span>Atendimento</span><strong>Novo Pedido</strong><a href="{{ url_for('pedido.nova') }}">Abrir carrinho →</a></article>
-  {% endif %}
-</section>
-{% endblock %}
+{% extends "base.html" %}{% block titulo %}Início · Sabor & Clic{% endblock %}{% block classe_pagina %}pagina-inicio{% endblock %}{% block conteudo %}<section class="hero"><div class="hero-copy"><h1>SABOR<br>&amp; CLIC</h1><p>Traga Sabor a sua vida<br>apenas com um Clic</p><form class="hero-search" action="{{ url_for('prato.listar') }}"><input name="busca" placeholder="Pesquisar pratos, chefs..." aria-label="Pesquisar pratos"><button aria-label="Pesquisar">⌕</button></form><div class="hero-actions"><a class="botao branco" href="{{ url_for('prato.listar') }}">♧ &nbsp;Ver Cardápio</a><a class="botao contorno" href="{{ url_for('main.agendamento') }}">▦ &nbsp;Agendar Bancada</a></div></div><div class="hero-visual"><img src="{{ url_for('static',filename='images/bolo-hero.png') }}" alt="Bolo de chocolate decorado"></div></section><section class="recursos"><article class="recurso"><span class="emoji">🍽️</span><h3>Cardápio Digital</h3><p>Crie o perfeito e faça a reserva dos seus pratos com praticidade e autonomia.</p><a href="{{ url_for('prato.listar') }}">Ver pratos →</a></article><article class="recurso"><span class="emoji">🗓️</span><h3>Agendamento de Bancadas</h3><p>Reserve sua bancada sem conflitos de horário, com mais inteligência.</p><a href="{{ url_for('main.agendamento') }}">Agendar →</a></article><article class="recurso"><span class="emoji">📦</span><h3>Controle de Pedidos</h3><p>Acompanhe seus pedidos em tempo real e veja o histórico completo.</p><a href="{{ url_for('pedido.listar') if session.get('usuario_id') else url_for('auth.login') }}">Ver pedidos →</a></article></section><section class="sobre"><h2>Por que a Sabor &amp; Clic?</h2><div class="sobre-dados"><div><span>♧</span><strong>{{ total_pratos }}</strong><small>Pratos disponíveis</small></div><div><span>♧</span><strong>{{ total_pedidos }}</strong><small>Pedidos registrados</small></div><div><span>☆</span><strong>♡</strong><small>Feito com carinho</small></div></div></section>{% endblock %}

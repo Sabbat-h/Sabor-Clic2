@@ -27,7 +27,16 @@ def create_app():
 
     @app.before_request
     def verificar_autenticacao():
-        rotas_publicas = {"auth.login", "auth.cadastro", "static"}
+        # Revalida privilégios no banco a cada requisição autenticada.
+        if session.get("usuario_id"):
+            from models import usuario as usuario_model
+            from database import get_db
+            usuario = get_db().execute("SELECT tipo_acesso FROM usuarios WHERE id=?", (session["usuario_id"],)).fetchone()
+            if usuario is None:
+                session.clear()
+            else:
+                session["tipo_acesso"] = usuario["tipo_acesso"]
+        rotas_publicas = {"auth.login", "auth.cadastro", "static", "prato.listar", "main.inicio", "main.agendamento"}
         if not session.get("usuario_id") and request.endpoint not in rotas_publicas:
             return redirect(url_for("auth.login"))
 

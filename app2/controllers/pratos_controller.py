@@ -27,7 +27,9 @@ def _dados_formulario():
 def listar():
     busca = request.args.get("busca", "")
     categoria = request.args.get("categoria", "")
-    return render_template("cardapio.html", pratos=prato_model.listar(busca, categoria), busca=busca, categoria=categoria)
+    carrinho = session.get("carrinho", [])
+    total = sum(item["preco_centavos"] * item["quantidade"] for item in carrinho)
+    return render_template("cardapio.html", pratos=prato_model.listar(busca, categoria), busca=busca, categoria=categoria, carrinho=carrinho, total=total)
 
 
 @prato_bp.route("/novo", methods=("GET", "POST"))
@@ -77,6 +79,8 @@ def excluir(prato_id):
 
 @prato_bp.get("/exportar")
 def exportar():
+    if session.get("tipo_acesso") != "ADMIN":
+        abort(403)
     wb = Workbook()
     ws = wb.active
     ws.title = "Cardápio"
