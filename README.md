@@ -46,3 +46,6 @@ Abra no navegador: http://127.0.0.1:5000
 As tabelas do SQLite são criadas na inicialização se ainda não existirem. Para parar o servidor, pressione Ctrl + C no PowerShell. Como cadastrar a equipe O formulário público é exclusivo para clientes. Para criar uma conta de cozinheiro ou administrador no banco de dados local, execute, na pasta app2: python criar_equipe.py Selecione COZINHEIRO ou ADMIN e informe os dados solicitados pelo programa. Não publique credenciais reais nem o banco SQLite no GitHub. Segurança e publicação Este projeto foi desenvolvido para execução local e fins de aprendizado. Antes de disponibilizá-lo na internet, é necessário rever as configurações de segurança: usar uma SECRET_KEY secreta e configurável, desativar o modo de depuração (debug=True), revisar proteção de formulários e configurar um servidor adequado para produção.
 
 Ao publicar o código no GitHub, não inclua o ambiente virtual (venv/), bancos de dados (*.sqlite, *.db), arquivos .env, senhas ou arquivos temporários (pycache/). Os testes existentes também devem ser revisados para refletir as rotas atuais do Sabor & Clic. Sabor & Clic — Traga sabor à sua vida, apenas com um clic!
+
+
+Site público: https://saboreclic.pythonanywhere.com/
