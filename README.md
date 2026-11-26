@@ -45,6 +45,10 @@ Abra no navegador: http://127.0.0.1:5000
 
 As tabelas do SQLite são criadas na inicialização se ainda não existirem. Para parar o servidor, pressione Ctrl + C no PowerShell. Como cadastrar a equipe O formulário público é exclusivo para clientes. Para criar uma conta de cozinheiro ou administrador no banco de dados local, execute, na pasta app2: python criar_equipe.py Selecione COZINHEIRO ou ADMIN e informe os dados solicitados pelo programa. Não publique credenciais reais nem o banco SQLite no GitHub. Segurança e publicação Este projeto foi desenvolvido para execução local e fins de aprendizado. Antes de disponibilizá-lo na internet, é necessário rever as configurações de segurança: usar uma SECRET_KEY secreta e configurável, desativar o modo de depuração (debug=True), revisar proteção de formulários e configurar um servidor adequado para produção.
 
-
+Link Canva: https://www.canva.com/design/DAHblTN39ZY/-g9uAiM3fvZwPRQTETAVzg/edit
 
 Site público: https://saboreclic.pythonanywhere.com/
+
+
+
+M
